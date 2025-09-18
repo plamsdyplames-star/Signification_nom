@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signification du nom</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #f0f8ff, #e6f7ff);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 50px;
+        min-height: 100vh;
+    }
+    h1 {
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    input[type="text"] {
+        padding: 10px;
+        font-size: 16px;
+        width: 250px;
+        margin-right: 10px;
+        border: 2px solid #4CAF50;
+        border-radius: 5px;
+        outline: none;
+    }
+    input[type="text"]:focus {
+        border-color: #2e8b57;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    #result {
+        margin-top: 30px;
+        font-size: 18px;
+        line-height: 1.6;
+        min-height: 50px;
+        text-align: left;
+        max-width: 400px;
+    }
+    .letter {
+        opacity: 0;
+        transform: translateY(-20px);
+        display: block;
+        transition: all 0.5s ease;
+    }
+    .letter.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    footer {
+        margin-top: auto;
+        margin-top: 50px;
+        font-size: 14px;
+        color: #555;
+    }
+    footer a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+    footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+
+<h1>Signification des lettres de votre nom</h1>
+
+<input type="text" id="nom" placeholder="Entrez votre nom">
+<button onclick="genererMots()">Générer</button>
+
+<div id="result"></div>
+
+<footer>
+    Contact : <a href="mailto:kalomboplamsdy@gmail.com">kalomboplamsdy@gmail.com</a>
+</footer>
+
+<script>
+const lettresDict = {
+    A: ["Amour","Ambitieux","Aimable","Admirable","Attentionné","Audacieux","Appliqué","Altruiste","Attachant","Affirmatif","Agréable","Authentique","Astucieux","Amical","Admiratif","Apaisant","Artistique","Attentif","Aventurier","Adaptable"],
+    B: ["Bienveillant","Brillant","Bon","Bienfaisant","Brave","Bienheureux","Bénévole","Bouillonnant","Bâtisseur","Bien inspiré","Bien ancré","Bien équilibré","Bien intentionné","Bénéficiaire","Bien cultivé","Bien formé","Bien élevé","Bien apprécié","Bien inspirant","Bien dynamique"],
+    C: ["Calme","Créatif","Courageux","Charmant","Confiant","Chaleureux","Compréhensif","Charismatique","Curieux","Consciencieux","Clément","Constant","Constructif","Captivant","Compatissant","Cultivé","Communicatif","Convaincant","Cordial","Créatif"],
+    D: ["Dynamique","Dévoué","Doué","Disponible","Discipliné","Déterminé","Drôle","Diplomate","Digne","Direct","Délicat","Débrouillard","Décontracté","Décent","Défenseur","Distingué","Dévouée","Délicate","Développé","Débordant"],
+    E: ["Énergique","Éloquent","Équilibré","Épatant","Éveillé","Étonnant","Éblouissant","Épanoui","Éthique","Émotif","Élégant","Éclairé","Éducatif","Émouvant","Élevé","Énigmatique","Équitable","Épris","Exemplaire","Exceptionnel"],
+    F: ["Fidèle","Fort","Franc","Fiduciaire","Fougueux","Formidable","Flexible","Fantastique","Fervent","Flamboyant","Fiable","Ferme","Fraternel","Féru","Fulgurant","Fringant","Facile","Favori","Familial","Fabuleux"],
+    G: ["Généreux","Gentil","Grand","Gracieux","Gaillard","Gai","Galant","Garant","Génial","Gagnant","Guerrier","Gourmand","Glorieux","Gentille","Générosité","Gratifiant","Guider","Garantir","Gourmet","Gagnant(e)"],
+    H: ["Honnête","Humble","Heureux","Hardi","Harmonieux","Habille","Héroïque","Humain","Hospitalier","Habitué","Honoré","Honorable","Habile","Hilarant","Humaniste","Harmonique","Haut","Héroïsme","Hilarité","Hospitalière"],
+    I: ["Intelligent","Inspirant","Indépendant","Imaginatif","Inventif","Idéaliste","Indulgent","Important","Impliqué","Intrépide","Indéfectible","Innovant","Inestimable","Intègre","Intuitif","Influenceur","Indispensable","Impressionnant","Instructif","Intense"],
+    J: ["Joyeux","Juste","Jovial","Judicieux","Jubilant","Joli","Journalier","Jeune","Joueur","Joviale","Jasmin","Joyeuse","Jubilatoire","Jaloux(positif:protecteur)","Juge","Jaillissant","Jouissif","Judiciaire","Justifié","Jaune(rayonnant)"],
+    K: ["Kif","Karité","Kamikaze(courageux)","Kermes(se)","Kinésique","Karatéka","Kaléidoscopique","Kolosse","Kérygmatique","Kérosène(énergique)"],
+    L: ["Loyal","Luminuex","Libre","Léger","Loyaliste","Lucide","Loquace","Leader","Loving","Légendaire","Luculent","Louable","Lumineux","Lustré","Libéral","Légitime","Loyalité","Ludique","Linéaire","Libéré"],
+    M: ["Motivé","Majestueux","Mature","Magique","Méthodique","Modeste","Merveilleux","Magnifique","Mobilisé","Médiateur","Méritant","Marrant","Malin","Mécène","Modéré","Mémoire","Méthodique","Mystérieux","Musical","Mouvementé"],
+    N: ["Noble","Novateur","Naturel","Neuf","Négociateur","Novice(positif)","Normal","Netteté","Nourricier","Nonchalant","Navré(positif:empathique)","Nimble(agile)","Nécessaire","Net","Né","Non-violent","Natif","Notable","Non-conformiste","Novateur"],
+    O: ["Optimiste","Organisé","Ouvert","Observateur","Original","Opiniâtre","Obéissant","Occasionnel(positif)","Orné","Opportun","Obligé(positif:responsable)","Objetif","Ouvert d'esprit","Omniscient","Ordonné","Oratoire","Oisif(positif:créatif)","Opérationnel","Offensif(positif:assuré)","Ovationné"],
+    P: ["Patient","Positif","Passionné","Persévérant","Polyvalent","Plaisant","Prudent","Proactif","Profond","Prévenant","Prestigieux","Précis","Productif","Populaire","Protecteur","Pragmatique","Pétillant","Plaisible","Précieux","Perspicace"],
+    Q: ["Qualifié","Quotidien(ne)","Quêteur","Quotidiennement engagé","Querelleur(positif:combatif)","Quotidien(positif)","Questionneur","Quotidien inspiré","Quick(rapide et vif)","Quintessentiel"],
+    R: ["Responsable","Respectueux","Raisonnable","Réfléchi","Répandu(positif:influant)","Radieux","Rassurant","Réconfortant","Riche(d'esprit)","Rationnel","Rapide","Réussi","Reconnaissant","Rêveur","Réservé","Rigoureux","Résistant","Réputé","Rayonnant","Réaliste"],
+    S: ["Sage","Sociable","Sérieux","Sensible","Solidaire","Souriant","Savant","Stable","Soutenant","Spirituel","Sportif","Subtil","Séduisant","Sincère","Sympathique","Sensé","Sagace","Spontané","Stimulant","Salutaire"],
+    T: ["Talentueux","Travailleur","Tolérant","Tenace","Tactique","Tendre","Tempéré","Transparent","Tranquille","Triomphant","Téméraire","Tolérant(e)","Talent","Tenace","Théorique","Tonique","Témoin(positif)","Tactile","Top","Tant aimé"],
+    U: ["Unique","Utile","Universel","Urbain(positif)","Unificateur","Ultime","Urbain","Utilement engagé","Unis","Urbain inspiré"],
+    V: ["Valeureux","Vif","Vigilant","Virtueux","Volontaire","Visionnaire","Vrai","Valorisé","Vibrant","Vénérable","Vrai ami","Vaillant","Vivace","Veritable","Vaste","Vivant","Volubile","Victorieux","Vigilant(e)","Valide"],
+    W: ["Warrior(courageux)","Welcomer(accueillant)","Witty(espirituel)","Wonderful(merveilleux)","Wise(sage)","Winning(gagnant)","Well-disposed(bienveillant)","Watchful(vigilant)","Worthy(valable)","Warm(chaleureux)"],
+    X: ["Xénial(positif:extraordinaire)","Xerophile(robuste)","Xylographe(créatif)","Xavien(unique)","Xpert(expert)"],
+    Y: ["Yin-Yang(équilibré)","Yogi(calme et sage)","Yardstick(exemplaire)","Yeoman(fidèle)","Young(dynamique)","Yielding(ouvert)","Yes-man(positif:soutenant)","Yare(vif)","Yen(enthousiaste)","Youthful(jeune d’esprit)"],
+    Z: ["Zélé","Zen","Zélément positif","Zesté(vif, plein de vie)","Zélé(e)","Zénith(al)","Zigzag(positif:adaptable)","Zingueur(dynamique)","Zéro défaut(ironique positif)","Zélément"]
+};
+
+function genererMots() {
+    const nom = document.getElementById("nom").value.toUpperCase();
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = ""; // efface le résultat précédent
+
+    let delay = 0;
+    for (let lettre of nom) {
+        let mot = "(pas de mot disponible)";
+        if (lettresDict[lettre]) {
+            const mots = lettresDict[lettre];
+            mot = mots[Math.floor(Math.random() * mots.length)];
+        }
+        const span = document.createElement("span");
+        span.className = "letter";
+        span.innerHTML = `<strong>${lettre}</strong> : ${mot}<br>`;
+        resultDiv.appendChild(span);
+
+        // animation
+        setTimeout(() => {
+            span.classList.add("show");
+        }, delay);
+        delay += 200; // décalage de 200ms pour chaque lettre
+    }
+}
+</script>
+
+</body>
+  </html>
